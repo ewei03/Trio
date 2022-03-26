@@ -1,0 +1,631 @@
+'Authors: Enoch Wei & Darrian Shue
+'Date: January 8, 2019
+'Purpose: Culminating Task - VB Game Development - Trio
+'=-=-=-=-=-=-=-=-=-=-=
+Option Explicit
+
+'GLOBAL VARIABLES
+Dim intUser1 As Integer
+Dim intUser2 As Integer
+Dim intUser3 As Integer
+Dim intComp1 As Integer
+Dim intComp2 As Integer
+Dim intComp3 As Integer
+Dim intUserScore As Integer
+Dim intCompScore As Integer
+Dim intMsg As Integer
+Dim intMagicNumber As Integer
+Dim intMarker As Integer
+Dim intSquare As Integer
+'cpu shouldn't move when user wins
+'make cpu smarter - attack, block
+
+Private Sub cmdReset_Click()
+'fix later
+intMsg = MsgBox("Are you sure you want to reset?", vbOKCancel)
+If intMsg = vbOK Then
+    imgUser1.Left = 528
+    imgUser1.Top = 40
+    imgUser2.Left = 528
+    imgUser2.Top = 200
+    imgUser3.Left = 528
+    imgUser3.Top = 360
+    imgComp1.Left = 704
+    imgComp1.Top = 40
+    imgComp2.Left = 704
+    imgComp2.Top = 200
+    imgComp3.Left = 704
+    imgComp3.Top = 360
+    intUser1 = -94
+    intUser2 = -95
+    intUser3 = -96
+    intComp1 = -97
+    intComp2 = -98
+    intComp3 = -99
+If intUserScore > 0 Or intCompScore > 0 Then
+    intMsg = MsgBox("Would you like to reset the score as well?", vbYesNo)
+    If intMsg = vbYes Then
+        intUserScore = 0
+        txtUserScore.Text = intUserScore
+        intCompScore = 0
+        txtCompScore.Text = intCompScore
+    ElseIf intMsg = vbNo Then
+    End If
+End If
+
+ElseIf intMsg = vbCancel Then
+End If
+
+cmdReset.Enabled = False
+End Sub
+
+Private Sub Form_Activate()
+Randomize
+optUserFirst.Value = True
+cmdReset.Enabled = False
+
+'markers
+imgUser1.Picture = LoadPicture(App.Path & "\rikka.jpg")
+imgUser2.Picture = LoadPicture(App.Path & "\rikka.jpg")
+imgUser3.Picture = LoadPicture(App.Path & "\rikka.jpg")
+
+imgComp1.Picture = LoadPicture(App.Path & "\rem.jpg")
+imgComp2.Picture = LoadPicture(App.Path & "\rem.jpg")
+imgComp3.Picture = LoadPicture(App.Path & "\rem.jpg")
+
+'scores
+intUserScore = 0
+txtUserScore.Text = intUserScore
+intCompScore = 0
+txtCompScore.Text = intCompScore
+
+intUser1 = -94
+intUser2 = -95
+intUser3 = -96
+intComp1 = -97
+intComp2 = -98
+intComp3 = -99
+End Sub
+
+Private Sub picBackground_DragDrop(Source As Control, X As Single, Y As Single)
+
+'user moves
+If X > 0 And X < 170 Then
+    If Y > 0 And Y < 170 Then
+        Source.Left = 10
+        Source.Top = 10
+    ElseIf Y > 170 And Y < 340 Then
+        Source.Left = 10
+        Source.Top = 180
+    ElseIf Y > 340 And Y < 510 Then
+        Source.Left = 10
+        Source.Top = 350
+    End If
+    
+ElseIf X > 170 And X < 340 Then
+    If Y > 0 And Y < 170 Then
+        Source.Left = 180
+        Source.Top = 10
+    ElseIf Y > 170 And Y < 340 Then
+        Source.Left = 180
+        Source.Top = 180
+    ElseIf Y > 340 And Y < 510 Then
+        Source.Left = 180
+        Source.Top = 350
+    End If
+    
+ElseIf X > 340 And X < 510 Then
+    If Y > 0 And Y < 170 Then
+        Source.Left = 350
+        Source.Top = 10
+    ElseIf Y > 170 And Y < 340 Then
+        Source.Left = 350
+        Source.Top = 180
+    ElseIf Y > 340 And Y < 510 Then
+        Source.Left = 350
+        Source.Top = 350
+    End If
+    
+cmdReset.Enabled = True
+End If
+
+If Source = imgUser1 Then
+    intUser1 = ConvertXY(X, Y)
+ElseIf Source = imgUser2 Then
+    intUser2 = ConvertXY(X, Y)
+ElseIf Source = imgUser3 Then
+    intUser3 = ConvertXY(X, Y)
+End If
+
+intSquare = Int(9 * Rnd) + 1
+
+Do While intSquare = intUser1 Or intSquare = intUser2 Or intSquare = intUser3 Or intSquare = intComp1 Or intSquare = intComp2 Or intSquare = intComp3
+    intSquare = Int(9 * Rnd) + 1
+Loop
+
+'cpu blocks user
+If intComp1 = -97 Then
+    If intUser1 + intUser2 < 15 And intUser1 + intUser2 >= 6 And 15 - (intUser1 + intUser2) <> intUser1 And 15 - (intUser1 + intUser2) <> intUser2 And 15 - (intUser1 + intUser2) <> intUser3 And 15 - (intUser1 + intUser2) <> intComp2 And 15 - (intUser1 + intUser2) <> intComp3 and intComp1 <> 15 - (intUser1 + intUser2) Then
+           	intComp1 = 15 - (intUser1 + intUser2)
+    ElseIf intUser1 + intUser3 < 15 And intUser1 + intUser3 >= 6 And 15 - (intUser1 + intUser3) <> intUser2 And 15 - (intUser1 + intUser3) <> intUser3 And 15 - (intUser1 + intUser3) <> intComp2 And 15 - (intUser1 + intUser3) <> intComp3 and intComp1 <> 15 - (intUser1 + intUser3) Then
+            intComp1 = 15 - (intUser1 + intUser3)
+              ElseIf intUser2 + intUser3 < 15 And intUser2 + intUser3 >= 6 And 15 - (intUser3 + intUser2) <> intUser2 And 15 - (intUser3 + intUser2) <> intUser3 And 15 - (intUser3 + intUser2) <> intComp2 And 15 - (intUser3 + intUser2) <> intComp3 Then
+        If intComp1 <> 15 - (intUser2 + intUser3) Then
+            intComp1 = 15 - (intUser2 + intUser3)
+            
+        intComp1 = intSquare
+        If intSquare = 8 Then
+            imgComp1.Left = 10
+            imgComp1.Top = 10
+        ElseIf intSquare = 3 Then
+            imgComp1.Left = 10
+            imgComp1.Top = 180
+        ElseIf intSquare = 4 Then
+            imgComp1.Left = 10
+            imgComp1.Top = 350
+        ElseIf intSquare = 1 Then
+            imgComp1.Left = 180
+            imgComp1.Top = 10
+        ElseIf intSquare = 5 Then
+            imgComp1.Left = 180
+            imgComp1.Top = 180
+        ElseIf intSquare = 9 Then
+            imgComp1.Left = 180
+            imgComp1.Top = 350
+        ElseIf intSquare = 6 Then
+            imgComp1.Left = 350
+            imgComp1.Top = 10
+        ElseIf intSquare = 7 Then
+            imgComp1.Left = 350
+            imgComp1.Top = 180
+        ElseIf intSquare = 2 Then
+            imgComp1.Left = 350
+            imgComp1.Top = 350
+        End If
+    End If
+    
+ElseIf intComp2 = -98 Then
+    If intComp2 <> 15 - (intUser1 + intUser2) And 15 - (intUser1 + intUser2) <> intUser1 And 15 - (intUser1 + intUser2) <> intUser2 And 15 - (intUser1 + intUser2) <> intUser3 And 15 - (intUser1 + intUser2) <> intComp1 And 15 - (intUser1 + intUser2) <> intComp3 Then
+        If intComp2 <> 15 - (intUser1 + intUser2) Then
+            intComp2 = 15 - (intUser1 + intUser2)
+            If intComp2 = 8 Then
+                imgComp2.Left = 10
+                imgComp2.Top = 10
+            ElseIf intComp2 = 3 Then
+                imgComp2.Left = 10
+                imgComp2.Top = 180
+            ElseIf intComp2 = 4 Then
+                imgComp2.Left = 10
+                imgComp2.Top = 350
+            ElseIf intComp2 = 1 Then
+                imgComp2.Left = 180
+                imgComp2.Top = 10
+            ElseIf intComp2 = 5 Then
+                imgComp2.Left = 180
+                imgComp2.Top = 180
+            ElseIf intComp2 = 9 Then
+                imgComp2.Left = 180
+                imgComp2.Top = 350
+            ElseIf intComp2 = 6 Then
+                imgComp2.Left = 350
+                imgComp2.Top = 10
+            ElseIf intComp2 = 7 Then
+                imgComp2.Left = 350
+                imgComp2.Top = 180
+            ElseIf intComp2 = 2 Then
+                imgComp2.Left = 350
+                imgComp2.Top = 350
+            End If
+        End If
+        
+    ElseIf intComp2 <> 15 - (intUser1 + intUser3) And 15 - (intUser1 + intUser3) <> intUser2 And 15 - (intUser1 + intUser3) <> intUser3 And 15 - (intUser1 + intUser3) <> intComp1 And 15 - (intUser1 + intUser3) <> intComp3 Then
+        If intComp2 <> 15 - (intUser1 + intUser3) Then
+            intComp2 = 15 - (intUser1 + intUser3)
+            If intComp2 = 8 Then
+                imgComp2.Left = 10
+                imgComp2.Top = 10
+            ElseIf intComp2 = 3 Then
+                imgComp2.Left = 10
+                imgComp2.Top = 180
+            ElseIf intComp2 = 4 Then
+                imgComp2.Left = 10
+                imgComp2.Top = 350
+            ElseIf intComp2 = 1 Then
+                imgComp2.Left = 180
+                imgComp2.Top = 10
+            ElseIf intComp2 = 5 Then
+                imgComp2.Left = 180
+                imgComp2.Top = 180
+            ElseIf intComp2 = 9 Then
+                imgComp2.Left = 180
+                imgComp2.Top = 350
+            ElseIf intComp2 = 6 Then
+                imgComp2.Left = 350
+                imgComp2.Top = 10
+            ElseIf intComp2 = 7 Then
+                imgComp2.Left = 350
+                imgComp2.Top = 180
+            ElseIf intComp2 = 2 Then
+                imgComp2.Left = 350
+                imgComp2.Top = 350
+            End If
+        End If
+        
+    ElseIf intComp2 <> 15 - (intUser2 + intUser3) And 15 - (intUser3 + intUser2) <> intUser2 And 15 - (intUser3 + intUser2) <> intUser3 And 15 - (intUser3 + intUser2) <> intComp1 And 15 - (intUser3 + intUser2) <> intComp3 Then
+        If intComp2 <> 15 - (intUser3 + intUser2) Then
+            intComp2 = 15 - (intUser2 + intUser3)
+            If intComp2 = 8 Then
+                imgComp2.Left = 10
+                imgComp2.Top = 10
+            ElseIf intComp2 = 3 Then
+                imgComp2.Left = 10
+                imgComp2.Top = 180
+            ElseIf intComp2 = 4 Then
+                imgComp2.Left = 10
+                imgComp2.Top = 350
+            ElseIf intComp2 = 1 Then
+                imgComp2.Left = 180
+                imgComp2.Top = 10
+            ElseIf intComp2 = 5 Then
+                imgComp2.Left = 180
+                imgComp2.Top = 180
+            ElseIf intComp2 = 9 Then
+                imgComp2.Left = 180
+                imgComp2.Top = 350
+            ElseIf intComp2 = 6 Then
+                imgComp2.Left = 350
+                imgComp2.Top = 10
+            ElseIf intComp2 = 7 Then
+                imgComp2.Left = 350
+                imgComp2.Top = 180
+            ElseIf intComp2 = 2 Then
+                imgComp2.Left = 350
+                imgComp2.Top = 350
+            End If
+        End If
+        
+    Else
+        intComp2 = intSquare
+        If intSquare = 8 Then
+            imgComp2.Left = 10
+            imgComp2.Top = 10
+        ElseIf intSquare = 3 Then
+            imgComp2.Left = 10
+            imgComp2.Top = 180
+        ElseIf intSquare = 4 Then
+            imgComp2.Left = 10
+            imgComp2.Top = 350
+        ElseIf intSquare = 1 Then
+            imgComp2.Left = 180
+            imgComp2.Top = 10
+        ElseIf intSquare = 5 Then
+            imgComp2.Left = 180
+            imgComp2.Top = 180
+        ElseIf intSquare = 9 Then
+            imgComp2.Left = 180
+            imgComp2.Top = 350
+        ElseIf intSquare = 6 Then
+            imgComp2.Left = 350
+            imgComp2.Top = 10
+        ElseIf intSquare = 7 Then
+            imgComp2.Left = 350
+            imgComp2.Top = 180
+        ElseIf intSquare = 2 Then
+            imgComp2.Left = 350
+            imgComp2.Top = 350
+        End If
+    End If
+        
+ElseIf intComp3 = -99 Then
+
+    If intComp3 <> 15 - (intUser1 + intUser2) And 15 - (intUser1 + intUser2) <> intUser1 And 15 - (intUser1 + intUser2) <> intUser2 And 15 - (intUser1 + intUser2) <> intUser3 And 15 - (intUser1 + intUser2) <> intComp1 And 15 - (intUser1 + intUser2) <> intComp2 Then
+        If intComp3 <> 15 - (intUser1 + intUser2) Then
+            intComp3 = 15 - (intUser1 + intUser2)
+            If intComp3 = 8 Then
+                imgComp3.Left = 10
+                imgComp3.Top = 10
+            ElseIf intComp3 = 3 Then
+                imgComp3.Left = 10
+                imgComp3.Top = 180
+            ElseIf intComp3 = 4 Then
+                imgComp3.Left = 10
+                imgComp3.Top = 350
+            ElseIf intComp3 = 1 Then
+                imgComp3.Left = 180
+                imgComp3.Top = 10
+            ElseIf intComp3 = 5 Then
+                imgComp3.Left = 180
+                imgComp3.Top = 180
+            ElseIf intComp3 = 9 Then
+                imgComp3.Left = 180
+                imgComp3.Top = 350
+            ElseIf intComp3 = 6 Then
+                imgComp3.Left = 350
+                imgComp3.Top = 10
+            ElseIf intComp3 = 7 Then
+                imgComp3.Left = 350
+                imgComp3.Top = 180
+            ElseIf intComp3 = 2 Then
+                imgComp3.Left = 350
+                imgComp3.Top = 350
+            End If
+        End If
+    
+    ElseIf intComp3 <> 15 - (intUser1 + intUser3) And 15 - (intUser1 + intUser3) <> intUser2 And 15 - (intUser1 + intUser3) <> intUser3 And 15 - (intUser1 + intUser3) <> intComp2 And 15 - (intUser1 + intUser3) <> intComp1 Then
+        If intComp3 <> 15 - (intUser1 + intUser3) Then
+            intComp3 = 15 - (intUser1 + intUser3)
+            If intComp3 = 8 Then
+                imgComp3.Left = 10
+                imgComp3.Top = 10
+            ElseIf intComp3 = 3 Then
+                imgComp3.Left = 10
+                imgComp3.Top = 180
+            ElseIf intComp3 = 4 Then
+                imgComp3.Left = 10
+                imgComp3.Top = 350
+            ElseIf intComp3 = 1 Then
+                imgComp3.Left = 180
+                imgComp3.Top = 10
+            ElseIf intComp3 = 5 Then
+                imgComp3.Left = 180
+                imgComp3.Top = 180
+            ElseIf intComp3 = 9 Then
+                imgComp3.Left = 180
+                imgComp3.Top = 350
+            ElseIf intComp3 = 6 Then
+                imgComp3.Left = 350
+                imgComp3.Top = 10
+            ElseIf intComp3 = 7 Then
+                imgComp3.Left = 350
+                imgComp3.Top = 180
+            ElseIf intComp3 = 2 Then
+                imgComp3.Left = 350
+                imgComp3.Top = 350
+            End If
+        End If
+    
+    ElseIf intComp3 <> 15 - (intUser2 + intUser3) And 15 - (intUser3 + intUser2) <> intUser2 And 15 - (intUser3 + intUser2) <> intUser3 And 15 - (intUser3 + intUser2) <> intComp2 And 15 - (intUser3 + intUser2) <> intComp1 Then
+        If intComp3 <> 15 - (intUser3 + intUser2) Then
+            intComp3 = 15 - (intUser2 + intUser3)
+            If intComp3 = 8 Then
+                imgComp3.Left = 10
+                imgComp3.Top = 10
+            ElseIf intComp3 = 3 Then
+                imgComp3.Left = 10
+                imgComp3.Top = 180
+            ElseIf intComp3 = 4 Then
+                imgComp3.Left = 10
+                imgComp3.Top = 350
+            ElseIf intComp3 = 1 Then
+                imgComp3.Left = 180
+                imgComp3.Top = 10
+            ElseIf intComp3 = 5 Then
+                imgComp3.Left = 180
+                imgComp3.Top = 180
+            ElseIf intComp3 = 9 Then
+                imgComp3.Left = 180
+                imgComp3.Top = 350
+            ElseIf intComp3 = 6 Then
+                imgComp3.Left = 350
+                imgComp3.Top = 10
+            ElseIf intComp3 = 7 Then
+                imgComp3.Left = 350
+                imgComp3.Top = 180
+            ElseIf intComp3 = 2 Then
+                imgComp3.Left = 350
+                imgComp3.Top = 350
+            End If
+        End If
+        
+    Else
+        intComp3 = intSquare
+        If intSquare = 8 Then
+            imgComp3.Left = 10
+            imgComp3.Top = 10
+        ElseIf intSquare = 3 Then
+            imgComp3.Left = 10
+            imgComp3.Top = 180
+        ElseIf intSquare = 4 Then
+            imgComp3.Left = 10
+            imgComp3.Top = 350
+        ElseIf intSquare = 1 Then
+            imgComp3.Left = 180
+            imgComp3.Top = 10
+        ElseIf intSquare = 5 Then
+            imgComp3.Left = 180
+            imgComp3.Top = 180
+        ElseIf intSquare = 9 Then
+            imgComp3.Left = 180
+            imgComp3.Top = 350
+        ElseIf intSquare = 6 Then
+            imgComp3.Left = 350
+            imgComp3.Top = 10
+        ElseIf intSquare = 7 Then
+            imgComp3.Left = 350
+            imgComp3.Top = 180
+        ElseIf intSquare = 2 Then
+            imgComp3.Left = 350
+            imgComp3.Top = 350
+        End If
+    End If
+    
+Else
+    intMarker = Int(Rnd * 3) + 1
+    If intMarker = 1 Then
+        intComp1 = intSquare
+        If intSquare = 8 Then
+            imgComp1.Left = 10
+            imgComp1.Top = 10
+        ElseIf intSquare = 3 Then
+            imgComp1.Left = 10
+            imgComp1.Top = 180
+        ElseIf intSquare = 4 Then
+            imgComp1.Left = 10
+            imgComp1.Top = 350
+        ElseIf intSquare = 1 Then
+            imgComp1.Left = 180
+            imgComp1.Top = 10
+        ElseIf intSquare = 5 Then
+            imgComp1.Left = 180
+            imgComp1.Top = 180
+        ElseIf intSquare = 9 Then
+            imgComp1.Left = 180
+            imgComp1.Top = 350
+        ElseIf intSquare = 6 Then
+            imgComp1.Left = 350
+            imgComp1.Top = 10
+        ElseIf intSquare = 7 Then
+            imgComp1.Left = 350
+            imgComp1.Top = 180
+        ElseIf intSquare = 2 Then
+            imgComp1.Left = 350
+            imgComp1.Top = 350
+        End If
+        
+    ElseIf intMarker = 2 Then
+        intComp2 = intSquare
+        If intSquare = 8 Then
+            imgComp2.Left = 10
+            imgComp2.Top = 10
+        ElseIf intSquare = 3 Then
+            imgComp2.Left = 10
+            imgComp2.Top = 180
+        ElseIf intSquare = 4 Then
+            imgComp2.Left = 10
+            imgComp2.Top = 350
+        ElseIf intSquare = 1 Then
+            imgComp2.Left = 180
+            imgComp2.Top = 10
+        ElseIf intSquare = 5 Then
+            imgComp2.Left = 180
+            imgComp2.Top = 180
+        ElseIf intSquare = 9 Then
+            imgComp2.Left = 180
+            imgComp2.Top = 350
+        ElseIf intSquare = 6 Then
+            imgComp2.Left = 350
+            imgComp2.Top = 10
+        ElseIf intSquare = 7 Then
+            imgComp2.Left = 350
+            imgComp2.Top = 180
+        ElseIf intSquare = 2 Then
+            imgComp2.Left = 350
+            imgComp2.Top = 350
+        End If
+        
+    Else
+        intComp3 = intSquare
+        If intSquare = 8 Then
+            imgComp3.Left = 10
+            imgComp3.Top = 10
+        ElseIf intSquare = 3 Then
+            imgComp3.Left = 10
+            imgComp3.Top = 180
+        ElseIf intSquare = 4 Then
+            imgComp3.Left = 10
+            imgComp3.Top = 350
+        ElseIf intSquare = 1 Then
+            imgComp3.Left = 180
+            imgComp3.Top = 10
+        ElseIf intSquare = 5 Then
+            imgComp3.Left = 180
+            imgComp3.Top = 180
+        ElseIf intSquare = 9 Then
+            imgComp3.Left = 180
+            imgComp3.Top = 350
+        ElseIf intSquare = 6 Then
+            imgComp3.Left = 350
+            imgComp3.Top = 10
+        ElseIf intSquare = 7 Then
+            imgComp3.Left = 350
+            imgComp3.Top = 180
+        ElseIf intSquare = 2 Then
+            imgComp3.Left = 350
+            imgComp3.Top = 350
+        End If
+    End If
+End If
+
+'win
+If intUser1 + intUser2 + intUser3 = 15 Then
+    intMsg = MsgBox("You win this round!", vbOKOnly)
+    intUserScore = intUserScore + 1
+    txtUserScore.Text = intUserScore
+    imgUser1.Left = 528
+    imgUser1.Top = 40
+    imgUser2.Left = 528
+    imgUser2.Top = 200
+    imgUser3.Left = 528
+    imgUser3.Top = 360
+    imgComp1.Left = 704
+    imgComp1.Top = 40
+    imgComp2.Left = 704
+    imgComp2.Top = 200
+    imgComp3.Left = 704
+    imgComp3.Top = 360
+    intUser1 = -94
+    intUser2 = -95
+    intUser3 = -96
+    intComp1 = -97
+    intComp2 = -98
+    intComp3 = -99
+ElseIf intComp1 + intComp2 + intComp3 = 15 Then
+    intMsg = MsgBox("Computer wins this round...", vbOKOnly)
+    intCompScore = intCompScore + 1
+    txtCompScore.Text = intCompScore
+    imgUser1.Left = 528
+    imgUser1.Top = 40
+    imgUser2.Left = 528
+    imgUser2.Top = 200
+    imgUser3.Left = 528
+    imgUser3.Top = 360
+    imgComp1.Left = 704
+    imgComp1.Top = 40
+    imgComp2.Left = 704
+    imgComp2.Top = 200
+    imgComp3.Left = 704
+    imgComp3.Top = 360
+    intUser1 = -94
+    intUser2 = -95
+    intUser3 = -96
+    intComp1 = -97
+    intComp2 = -98
+    intComp3 = -99
+End If
+End Sub
+
+Public Function ConvertXY(X As Single, Y As Single)
+
+If X > 0 And X < 170 Then
+    If Y > 0 And Y < 170 Then
+        intMagicNumber = 8
+    ElseIf Y > 170 And Y < 340 Then
+        intMagicNumber = 3
+    ElseIf Y > 340 And Y < 510 Then
+        intMagicNumber = 4
+    End If
+    
+ElseIf X > 170 And X < 340 Then
+    If Y > 0 And Y < 170 Then
+        intMagicNumber = 1
+    ElseIf Y > 170 And Y < 340 Then
+        intMagicNumber = 5
+    ElseIf Y > 340 And Y < 510 Then
+        intMagicNumbrrer = 9
+    End If
+    
+ElseIf X > 340 And X < 510 Then
+    If Y > 0 And Y < 170 Then
+        intMagicNumber = 6
+    ElseIf Y > 170 And Y < 340 Then
+        intMagicNumber = 7
+    ElseIf Y > 340 And Y < 510 Then
+        intMagicNumber = 2
+    End If
+End If
+    
+ConvertXY = intMagicNumber
+
+End Function
+
+
